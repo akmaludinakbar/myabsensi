@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  plex:
+    image: plexinc/pms-docker
+    restart: unless-stopped
+    ports:
+      - ${PLEX_PORT:-32400}:32400/tcp
+      - 3005:3005/tcp
+      - 8324:8324/tcp
+      - 32469:32469/tcp
+      - 1900:1900/udp
+      - 32410:32410/udp
+      - 32412:32412/udp
+      - 32413:32413/udp
+      - 32414:32414/udp
+    environment:
+      ADVERTISE_IP: 'http://${PLEX_ADVERTISE_IP:?Please configure PLEX_ADVERTISE_IP to connect to Plex}:${PLEX_PORT:-32400}/'
+      # https://www.plex.tv/claim/
+      PLEX_CLAIM: '${PLEX_CLAIM_TOKEN:?Please configure PLEX_CLAIM_TOKEN via env variables}'
+      # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List
+      TZ: '${TZ:-America/Los_Angeles}'
+    volumes:
+      - plex_config:/config
+      - plex_transcode:/transcode
+      - plex_media:/media
+    deploy:
+      placement:
+        constraints:
+          # You'll need to label at least one node for plex deployment
+          - node.labels.deployment.target.plex == true
+
+volumes:
+  plex_media:
+    driver_opts:
+      type: "nfs"
+      o: "addr=${PLEX_NAS_ADDRESS:?Please configure PLEX_NAS_ADDRESS},rw,noatime,rsize=8192,wsize=8192,tcp,timeo=14,nfsvers=4"
+      device: ":${PLEX_NAS_DEVICE:?Please configure PLEX_NAS_DEVICE}"
+  plex_config: {}
+  plex_transcode: {}
