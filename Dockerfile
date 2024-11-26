@@ -11,6 +11,13 @@ COPY . .
 RUN npm install --legacy-peer-deps
 RUN npm run build
 
+
+
+
+# Debug: Check if npm install worked
+RUN ls -al /app/node_modules  
+# Ensure node_modules are installed
+
 # Production image
 FROM node:18-slim AS production
 WORKDIR /app
@@ -24,9 +31,12 @@ RUN addgroup --gid 1001 nodejs
 RUN adduser --uid 1001 --ingroup nodejs --disabled-password nextjs
 USER nextjs
 
+# Debug: Check the /app directory in the production image
+RUN ls -al /app
+
 CMD ["npm", "start"]
 
-# Development image
+# Development image (commented out for now)
 # FROM base AS dev
 # WORKDIR /app
 # ENV NODE_ENV=development
