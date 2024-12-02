@@ -19,7 +19,7 @@ RUN ls -al /app/node_modules
 # Production image
 FROM node:18-slim AS production
 WORKDIR /app
-COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /package.json ./package.json
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
