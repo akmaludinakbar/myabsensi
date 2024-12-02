@@ -11,3 +11,6 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
+      - /app/.next
+      - /app/package-lock.json
+      - /app/package.json
