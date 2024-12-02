@@ -1,19 +1,19 @@
 # Base image with pre-installed build tools
 FROM node:18-bullseye AS base
 WORKDIR /app
-COPY package.json yarn.lock ./
-# Copy only package.json and yarn.lock
+COPY package.json /app 
+# Copy only package.json and lock file
 EXPOSE 3000
 
 # Builder image for compiling the application
 FROM base AS builder
 WORKDIR /app
-COPY . .
-# Copy the rest of the project files
-RUN yarn install --prefer-offline
-RUN yarn build
+COPY . . 
+# Copy the rest of the files
+RUN npm install --legacy-peer-deps
+RUN npm run build
 
-# Debug: Check if yarn install worked
+# Debug: Check if npm install worked
 RUN ls -al /app/node_modules  
 
 # Production image
@@ -32,4 +32,4 @@ USER nextjs
 # Debug: Check the /app directory in the production image
 RUN ls -al /app
 
-CMD ["yarn", "start"]
+CMD ["npm", "start"]
